@@ -1,6 +1,11 @@
 # @dreamer/image/client
 
-图片处理库 - 客户端实现
+> 一个用于浏览器的图片处理库，提供图片处理、图片转换、图片压缩等功能
+
+[![JSR](https://jsr.io/badges/@dreamer/image/client)](https://jsr.io/@dreamer/image/client)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
 
 使用浏览器原生 Canvas API 和 Image API 实现图片处理功能，无需额外依赖。
 
@@ -10,12 +15,27 @@
 
 ## 特性
 
-- **图片缩放**：等比例缩放、指定尺寸缩放、多种缩放模式
-- **图片裁剪**：矩形裁剪、精确坐标控制
-- **格式转换**：支持 JPEG、PNG、WebP、GIF、BMP、TIFF、AVIF
-- **图片压缩**：有损压缩、质量控制
-- **水印添加**：文字水印、图片水印、位置和透明度控制
-- **信息提取**：尺寸、格式、文件大小
+- **图片缩放**：
+  - 等比例缩放（保持宽高比）
+  - 指定尺寸缩放（宽度、高度）
+  - 多种缩放模式（contain、cover、fill 等）
+- **图片裁剪**：
+  - 矩形裁剪
+  - 精确坐标控制（x、y、width、height）
+- **格式转换**：
+  - 支持常见格式（JPEG、PNG、WebP、GIF、BMP、TIFF、AVIF）
+  - 格式自动检测
+- **图片压缩**：
+  - 有损压缩
+  - 质量控制（0-1 范围）
+- **水印添加**：
+  - 文字水印
+  - 图片水印
+  - 位置和透明度控制
+- **信息提取**：
+  - 图片尺寸（宽度、高度）
+  - 图片格式（MIME 类型）
+  - 文件大小
 
 ## 安装
 
@@ -42,7 +62,7 @@ import {
 - **依赖**：无需额外依赖，使用浏览器原生 API
 - **API 要求**：Canvas API、Image API、Blob API
 
-## 使用示例
+## 🚀 快速开始
 
 ### 基本使用
 
@@ -396,6 +416,31 @@ interface ImageInfo {
 - **输入类型**：客户端支持 `ArrayBuffer`、`Uint8Array` 或 `string`（Data URL）
 - **依赖**：客户端无需外部依赖，服务端需要 ImageMagick
 
-## 更多信息
+---
 
-- [服务端文档](../README.md) - 服务端使用说明
+## 📝 备注
+
+- **统一接口**：与服务端使用相似的 API 接口，降低学习成本
+- **浏览器兼容性**：需要支持 Canvas API 的现代浏览器
+- **类型安全**：完整的 TypeScript 类型支持
+- **无外部依赖**：纯 TypeScript 实现
+
+---
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+---
+
+## 📄 许可证
+
+MIT License - 详见 [LICENSE.md](../../../LICENSE.md)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by Dreamer Team**
+
+</div>
