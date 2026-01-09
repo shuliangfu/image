@@ -6,9 +6,6 @@
  * 使用浏览器原生 Canvas API 和 Image API 实现图片处理功能。
  */
 
-/// <reference lib="dom" />
-
-
 /**
  * 图片信息接口
  */

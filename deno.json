@@ -2,6 +2,9 @@
   "name": "@dreamer/image",
   "version": "1.0.0-beta.1",
   "license": "MIT",
+  "compilerOptions": {
+    "lib": ["deno.window", "dom"]
+  },
   "exports": {
     ".": "./src/mod.ts",
     "./client": "./src/client/mod.ts"
