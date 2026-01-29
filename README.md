@@ -80,37 +80,41 @@ deno add jsr:@dreamer/image
 
 ### 前置要求
 
-服务端需要安装 ImageMagick。库会自动检测并尝试安装（macOS），如果无法自动安装会显示安装提示。
+服务端需要安装
+ImageMagick。库会自动检测并尝试安装（macOS），如果无法自动安装会显示安装提示。
 
 **macOS**：
+
 ```bash
 brew install imagemagick
 ```
 
 **Linux (Ubuntu/Debian)**：
+
 ```bash
 sudo apt-get install -y imagemagick
 ```
 
 **Linux (CentOS/RHEL)**：
+
 ```bash
 sudo yum install -y ImageMagick
 ```
 
-**Windows**：
-访问 [ImageMagick 官网](https://imagemagick.org/script/download.php) 下载并安装。
+**Windows**： 访问
+[ImageMagick 官网](https://imagemagick.org/script/download.php) 下载并安装。
 
 ### 基本使用
 
 ```typescript
 import {
-  resize,
-  crop,
-  convert,
-  compress,
   addWatermark,
-  extractInfo,
+  compress,
+  convert,
   createImageProcessor,
+  crop,
+  extractInfo,
+  resize,
 } from "jsr:@dreamer/image";
 
 // 方式1：使用便捷函数（推荐）
@@ -243,20 +247,23 @@ await writeFile("./output.jpg", resized);
 
 ## 客户端使用
 
-客户端使用浏览器原生 Canvas API，无需额外依赖。详见 [客户端文档](./src/client/README.md)。
+客户端使用浏览器原生 Canvas API，无需额外依赖。详见
+[客户端文档](./src/client/README.md)。
 
 ```typescript
 import {
-  resize,
-  crop,
-  convert,
-  compress,
   addWatermark,
+  compress,
+  convert,
+  crop,
   extractInfo,
+  resize,
 } from "jsr:@dreamer/image/client";
 
 // 从文件输入读取图片
-const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+const fileInput = document.querySelector(
+  'input[type="file"]',
+) as HTMLInputElement;
 const file = fileInput.files?.[0];
 if (!file) return;
 
@@ -286,12 +293,14 @@ document.body.appendChild(img);
 缩放图片。
 
 **参数**：
+
 - `image`: `Uint8Array | string` - 图片数据或文件路径
 - `options`: `ResizeOptions` - 缩放选项
 
 **返回**：`Promise<Uint8Array>` - 处理后的图片数据
 
 **示例**：
+
 ```typescript
 const resized = await resize(imageBuffer, {
   width: 800,
@@ -306,12 +315,14 @@ const resized = await resize(imageBuffer, {
 裁剪图片。
 
 **参数**：
+
 - `image`: `Uint8Array | string` - 图片数据或文件路径
 - `options`: `CropOptions` - 裁剪选项
 
 **返回**：`Promise<Uint8Array>` - 处理后的图片数据
 
 **示例**：
+
 ```typescript
 const cropped = await crop(imageBuffer, {
   x: 100,
@@ -326,12 +337,14 @@ const cropped = await crop(imageBuffer, {
 格式转换。
 
 **参数**：
+
 - `image`: `Uint8Array | string` - 图片数据或文件路径
 - `options`: `ConvertOptions` - 转换选项
 
 **返回**：`Promise<Uint8Array>` - 处理后的图片数据
 
 **示例**：
+
 ```typescript
 const converted = await convert(imageBuffer, {
   format: "webp",
@@ -344,17 +357,20 @@ const converted = await convert(imageBuffer, {
 压缩图片。
 
 **参数**：
+
 - `image`: `Uint8Array | string` - 图片数据或文件路径
 - `options`: `CompressOptions` - 压缩选项
   - `quality`: `number` - 质量（0-100，可选）
     - `100`：无损压缩（保持原始质量）
     - `< 100`：有损压缩（文件更小，质量降低）
     - 未指定时：根据格式自动判断（PNG/GIF 默认 100，其他默认 80）
-  - `format`: `"jpeg" | "png" | "webp" | "gif" | "bmp" | "tiff" | "avif"` - 目标格式（可选，默认：jpeg）
+  - `format`: `"jpeg" | "png" | "webp" | "gif" | "bmp" | "tiff" | "avif"` -
+    目标格式（可选，默认：jpeg）
 
 **返回**：`Promise<Uint8Array>` - 压缩后的图片数据
 
 **压缩模式说明**：
+
 - **有损压缩**：通过降低质量来减小文件大小
   - 适用于：JPEG、WebP、AVIF 等格式
   - 设置：`quality < 100`
@@ -363,12 +379,14 @@ const converted = await convert(imageBuffer, {
   - 设置：`quality = 100`
 
 **格式选择建议**：
+
 - **Web 应用**：推荐 WebP 或 AVIF（压缩率高，质量好）
 - **兼容性要求高**：使用 JPEG
 - **需要透明通道**：使用 PNG（无损）
 - **动画图片**：使用 GIF
 
 **示例**：
+
 ```typescript
 // 有损压缩为 WebP（推荐用于 Web）
 const compressed = await compress(imageBuffer, {
@@ -400,12 +418,14 @@ const lossy = await compress(imageBuffer, {
 添加水印。
 
 **参数**：
+
 - `image`: `Uint8Array | string` - 图片数据或文件路径
 - `options`: `WatermarkOptions` - 水印选项
 
 **返回**：`Promise<Uint8Array>` - 处理后的图片数据
 
 **示例**：
+
 ```typescript
 // 文字水印
 const watermarked = await addWatermark(imageBuffer, {
@@ -431,11 +451,13 @@ const watermarkedImage = await addWatermark(imageBuffer, {
 提取图片信息。
 
 **参数**：
+
 - `image`: `Uint8Array | string` - 图片数据或文件路径
 
 **返回**：`Promise<ImageInfo>` - 图片信息
 
 **示例**：
+
 ```typescript
 const info = await extractInfo(imageBuffer);
 // {
@@ -486,7 +508,12 @@ interface WatermarkOptions {
   type: "text" | "image"; // 水印类型
   text?: string; // 文字内容（当 type 为 "text" 时）
   image?: Uint8Array | string; // 图片数据（当 type 为 "image" 时）
-  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "center"; // 位置
+  position?:
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right"
+    | "center"; // 位置
   fontSize?: number; // 字体大小（当 type 为 "text" 时）
   color?: string; // 文字颜色（当 type 为 "text" 时）
   opacity?: number; // 透明度（0-1）
@@ -510,24 +537,28 @@ interface ImageInfo {
 ### 压缩模式说明
 
 **有损压缩**（通过降低质量来减小文件大小）：
+
 - 设置方式：`quality < 100`
 - 适用格式：JPEG、WebP、AVIF 等
 - 特点：文件更小，但质量会降低
 - 推荐：WebP 或 AVIF 用于 Web 应用（压缩率高，质量好）
 
 **无损压缩**（保持原始质量，文件较大）：
+
 - 设置方式：`quality = 100`
 - 适用格式：PNG、GIF 等
 - 特点：保持原始质量，但文件较大
 - 推荐：PNG 用于需要透明通道的场景（图标、Logo）
 
 **格式选择建议**：
+
 - **Web 应用**：推荐 WebP 或 AVIF（压缩率高，质量好）
 - **兼容性要求高**：使用 JPEG
 - **需要透明通道**：使用 PNG（无损）
 - **动画图片**：使用 GIF
 
-**注意**：有损/无损压缩是通过 `quality` 参数控制的，而不是格式本身决定的。所有格式都支持有损和无损压缩。
+**注意**：有损/无损压缩是通过 `quality`
+参数控制的，而不是格式本身决定的。所有格式都支持有损和无损压缩。
 
 ## 自动安装 ImageMagick
 
@@ -537,6 +568,7 @@ interface ImageInfo {
 - **Linux/Windows**：显示详细的安装提示和命令
 
 如果自动安装失败或无法自动安装，会显示清晰的安装提示，包括：
+
 - 操作系统特定的安装命令
 - 安装步骤说明
 - 下载链接（Windows）

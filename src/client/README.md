@@ -47,12 +47,12 @@ deno add jsr:@dreamer/image
 
 ```typescript
 import {
-  resize,
-  crop,
-  convert,
-  compress,
   addWatermark,
+  compress,
+  convert,
+  crop,
   extractInfo,
+  resize,
 } from "jsr:@dreamer/image/client";
 ```
 
@@ -68,16 +68,18 @@ import {
 
 ```typescript
 import {
-  resize,
-  crop,
-  convert,
-  compress,
   addWatermark,
+  compress,
+  convert,
+  crop,
   extractInfo,
+  resize,
 } from "jsr:@dreamer/image/client";
 
 // 从文件输入读取图片
-const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+const fileInput = document.querySelector(
+  'input[type="file"]',
+) as HTMLInputElement;
 const file = fileInput.files?.[0];
 if (!file) return;
 
@@ -214,12 +216,14 @@ async function setupImageEditor(file: File) {
 缩放图片。
 
 **参数**：
+
 - `image`: `ArrayBuffer | Uint8Array | string` - 图片数据或 Data URL
 - `options`: `ResizeOptions` - 缩放选项
 
 **返回**：`Promise<Blob>` - 处理后的图片 Blob
 
 **示例**：
+
 ```typescript
 const blob = await resize(arrayBuffer, {
   width: 800,
@@ -234,12 +238,14 @@ const blob = await resize(arrayBuffer, {
 裁剪图片。
 
 **参数**：
+
 - `image`: `ArrayBuffer | Uint8Array | string` - 图片数据或 Data URL
 - `options`: `CropOptions` - 裁剪选项
 
 **返回**：`Promise<Blob>` - 处理后的图片 Blob
 
 **示例**：
+
 ```typescript
 const blob = await crop(arrayBuffer, {
   x: 100,
@@ -254,12 +260,14 @@ const blob = await crop(arrayBuffer, {
 格式转换。
 
 **参数**：
+
 - `image`: `ArrayBuffer | Uint8Array | string` - 图片数据或 Data URL
 - `options`: `ConvertOptions` - 转换选项
 
 **返回**：`Promise<Blob>` - 处理后的图片 Blob
 
 **示例**：
+
 ```typescript
 const blob = await convert(arrayBuffer, {
   format: "webp",
@@ -272,12 +280,14 @@ const blob = await convert(arrayBuffer, {
 压缩图片。
 
 **参数**：
+
 - `image`: `ArrayBuffer | Uint8Array | string` - 图片数据或 Data URL
 - `options`: `CompressOptions` - 压缩选项
 
 **返回**：`Promise<Blob>` - 处理后的图片 Blob
 
 **示例**：
+
 ```typescript
 const blob = await compress(arrayBuffer, {
   quality: 0.8, // 0-1
@@ -290,12 +300,14 @@ const blob = await compress(arrayBuffer, {
 添加水印。
 
 **参数**：
+
 - `image`: `ArrayBuffer | Uint8Array | string` - 图片数据或 Data URL
 - `options`: `WatermarkOptions` - 水印选项
 
 **返回**：`Promise<Blob>` - 处理后的图片 Blob
 
 **示例**：
+
 ```typescript
 // 文字水印
 const blob = await addWatermark(arrayBuffer, {
@@ -321,11 +333,13 @@ const blob = await addWatermark(arrayBuffer, {
 提取图片信息。
 
 **参数**：
+
 - `image`: `ArrayBuffer | Uint8Array | string` - 图片数据或 Data URL
 
 **返回**：`Promise<ImageInfo>` - 图片信息
 
 **示例**：
+
 ```typescript
 const info = await extractInfo(arrayBuffer);
 // {
@@ -373,7 +387,12 @@ interface WatermarkOptions {
   type: "text" | "image"; // 水印类型
   text?: string; // 文字内容（当 type 为 "text" 时）
   image?: ArrayBuffer | Uint8Array | string; // 图片数据（当 type 为 "image" 时）
-  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "center"; // 位置
+  position?:
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right"
+    | "center"; // 位置
   fontSize?: number; // 字体大小（当 type 为 "text" 时）
   color?: string; // 文字颜色（当 type 为 "text" 时）
   opacity?: number; // 透明度（0-1）
@@ -407,7 +426,8 @@ interface ImageInfo {
 - **浏览器兼容性**：需要支持 Canvas API 的现代浏览器
 - **格式支持**：不同浏览器的格式支持可能不同
 - **内存占用**：处理大图片时注意内存占用
-- **Blob URL**：使用 `URL.createObjectURL()` 创建的 URL 需要手动释放（`URL.revokeObjectURL()`）
+- **Blob URL**：使用 `URL.createObjectURL()` 创建的 URL
+  需要手动释放（`URL.revokeObjectURL()`）
 
 ## 与服务端的区别
 
