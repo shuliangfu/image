@@ -3,7 +3,7 @@
 > 一个用于浏览器的图片处理库，提供图片处理、图片转换、图片压缩等功能
 
 [![JSR](https://jsr.io/badges/@dreamer/image/client)](https://jsr.io/@dreamer/image/client)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE.md)
 
 ---
 

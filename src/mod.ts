@@ -9,7 +9,6 @@
  */
 
 import {
-  type CommandProcess,
   createCommand,
   IS_DENO,
   makeTempDir,
@@ -18,29 +17,6 @@ import {
   stat,
   writeFile,
 } from "@dreamer/runtime-adapter";
-
-/**
- * 在 Deno 环境下安全关闭命令进程的流
- * @param cmd 命令进程对象
- */
-async function closeCommandStreams(cmd: CommandProcess): Promise<void> {
-  if (IS_DENO) {
-    try {
-      if (cmd.stdout) {
-        await cmd.stdout.cancel();
-      }
-    } catch {
-      // 忽略取消错误（流可能已经关闭）
-    }
-    try {
-      if (cmd.stderr) {
-        await cmd.stderr.cancel();
-      }
-    } catch {
-      // 忽略取消错误（流可能已经关闭）
-    }
-  }
-}
 
 /**
  * 图片信息接口
@@ -249,12 +225,7 @@ async function tryAutoInstall(): Promise<boolean> {
         stderr: "piped",
       });
 
-      let brewOutput;
-      try {
-        brewOutput = await brewCheck.output();
-      } finally {
-        await closeCommandStreams(brewCheck);
-      }
+      const brewOutput = await brewCheck.output();
 
       if (brewOutput.success) {
         console.log("🔍 检测到 Homebrew，正在尝试安装 ImageMagick...");
@@ -266,15 +237,7 @@ async function tryAutoInstall(): Promise<boolean> {
           stderr: "inherit",
         });
 
-        let installOutput;
-        try {
-          installOutput = await installCmd.output();
-        } finally {
-          // inherit 模式下不需要关闭流
-          if (installCmd.stdout && installCmd.stderr) {
-            await closeCommandStreams(installCmd);
-          }
-        }
+        const installOutput = await installCmd.output();
 
         if (installOutput.success) {
           console.log("✅ ImageMagick 安装成功！");
@@ -333,12 +296,7 @@ async function getInstallHint(): Promise<string> {
           stdout: "piped",
           stderr: "piped",
         });
-        let aptOutput;
-        try {
-          aptOutput = await aptCheck.output();
-        } finally {
-          await closeCommandStreams(aptCheck);
-        }
+        const aptOutput = await aptCheck.output();
         if (aptOutput.success) {
           installCommand = "sudo apt-get install -y imagemagick";
         } else {
@@ -352,12 +310,7 @@ async function getInstallHint(): Promise<string> {
             stdout: "piped",
             stderr: "piped",
           });
-          let yumOutput;
-          try {
-            yumOutput = await yumCheck.output();
-          } finally {
-            await closeCommandStreams(yumCheck);
-          }
+          const yumOutput = await yumCheck.output();
           if (yumOutput.success) {
             installCommand = "sudo yum install -y ImageMagick";
           } else {
@@ -423,13 +376,7 @@ async function checkImageMagick(magickPath?: string): Promise<boolean> {
         stderr: "piped",
       });
 
-      let output;
-      try {
-        output = await checkCmd.output();
-      } finally {
-        await closeCommandStreams(checkCmd);
-      }
-
+      const output = await checkCmd.output();
       if (output.success) {
         return true;
       }
@@ -488,13 +435,7 @@ async function getMagickCommand(magickPath?: string): Promise<string> {
         stderr: "piped",
       });
 
-      let output;
-      try {
-        output = await checkCmd.output();
-      } finally {
-        await closeCommandStreams(checkCmd);
-      }
-
+      const output = await checkCmd.output();
       if (output.success) {
         return cmd;
       }
@@ -634,15 +575,10 @@ class ImageMagickProcessor implements ImageProcessor {
         stderr: "piped",
       });
 
-      let output;
-      try {
-        output = await cmd.output();
-        if (!output.success) {
-          const error = new TextDecoder().decode(output.stderr);
-          throw new Error(`ImageMagick 处理失败: ${error}`);
-        }
-      } finally {
-        await closeCommandStreams(cmd);
+      const output = await cmd.output();
+      if (!output.success) {
+        const error = new TextDecoder().decode(output.stderr);
+        throw new Error(`ImageMagick 处理失败: ${error}`);
       }
 
       const result = await readAndCleanup(outputFile);
@@ -694,15 +630,10 @@ class ImageMagickProcessor implements ImageProcessor {
         stderr: "piped",
       });
 
-      let output;
-      try {
-        output = await cmd.output();
-        if (!output.success) {
-          const error = new TextDecoder().decode(output.stderr);
-          throw new Error(`ImageMagick 处理失败: ${error}`);
-        }
-      } finally {
-        await closeCommandStreams(cmd);
+      const output = await cmd.output();
+      if (!output.success) {
+        const error = new TextDecoder().decode(output.stderr);
+        throw new Error(`ImageMagick 处理失败: ${error}`);
       }
 
       const result = await readAndCleanup(outputFile);
@@ -774,15 +705,10 @@ class ImageMagickProcessor implements ImageProcessor {
         stderr: "piped",
       });
 
-      let output;
-      try {
-        output = await cmd.output();
-        if (!output.success) {
-          const error = new TextDecoder().decode(output.stderr);
-          throw new Error(`ImageMagick 处理失败: ${error}`);
-        }
-      } finally {
-        await closeCommandStreams(cmd);
+      const output = await cmd.output();
+      if (!output.success) {
+        const error = new TextDecoder().decode(output.stderr);
+        throw new Error(`ImageMagick 处理失败: ${error}`);
       }
 
       const result = await readAndCleanup(outputFile);
@@ -936,15 +862,10 @@ class ImageMagickProcessor implements ImageProcessor {
         stderr: "piped",
       });
 
-      let output;
-      try {
-        output = await cmd.output();
-        if (!output.success) {
-          const error = new TextDecoder().decode(output.stderr);
-          throw new Error(`ImageMagick 处理失败: ${error}`);
-        }
-      } finally {
-        await closeCommandStreams(cmd);
+      const output = await cmd.output();
+      if (!output.success) {
+        const error = new TextDecoder().decode(output.stderr);
+        throw new Error(`ImageMagick 处理失败: ${error}`);
       }
 
       const result = await readAndCleanup(outputFile);
@@ -991,15 +912,10 @@ class ImageMagickProcessor implements ImageProcessor {
         stderr: "piped",
       });
 
-      let output;
-      try {
-        output = await cmd.output();
-        if (!output.success) {
-          const error = new TextDecoder().decode(output.stderr);
-          throw new Error(`ImageMagick 处理失败: ${error}`);
-        }
-      } finally {
-        await closeCommandStreams(cmd);
+      const output = await cmd.output();
+      if (!output.success) {
+        const error = new TextDecoder().decode(output.stderr);
+        throw new Error(`ImageMagick 处理失败: ${error}`);
       }
 
       const info = new TextDecoder().decode(output.stdout).trim();

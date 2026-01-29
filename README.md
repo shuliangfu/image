@@ -3,7 +3,7 @@
 > 一个兼容 Deno 和 Bun 的图片处理库，提供图片处理、图片转换、图片压缩等功能
 
 [![JSR](https://jsr.io/badges/@dreamer/image)](https://jsr.io/@dreamer/image)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE.md)
 
 ---
 
@@ -65,7 +65,7 @@ deno add jsr:@dreamer/image
 
 ## 环境兼容性
 
-- **运行时要求**：Deno 2.5+ 或 Bun 1.0+
+- **运行时要求**：Deno 2.6+ 或 Bun 1.3.5
 - **服务端**：✅ 支持（兼容 Deno 和 Bun 运行时，使用 ImageMagick）
   - 使用 ImageMagick 命令行工具
   - 支持所有图片处理功能

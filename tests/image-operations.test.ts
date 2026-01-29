@@ -36,29 +36,8 @@ async function getPaths() {
 }
 
 /**
- * 在 Deno 环境下安全关闭命令进程的流
- */
-async function closeCommandStreams(cmd: any): Promise<void> {
-  if ((globalThis as any).Deno) {
-    try {
-      if (cmd.stdout) {
-        await cmd.stdout.cancel();
-      }
-    } catch {
-      // 忽略取消错误（流可能已经关闭）
-    }
-    try {
-      if (cmd.stderr) {
-        await cmd.stderr.cancel();
-      }
-    } catch {
-      // 忽略取消错误（流可能已经关闭）
-    }
-  }
-}
-
-/**
  * 检查 ImageMagick 是否可用
+ * 新版 createCommand API 中，output() 会自动处理进程和流的关闭
  */
 async function checkImageMagickAvailable(): Promise<boolean> {
   try {
@@ -68,12 +47,7 @@ async function checkImageMagickAvailable(): Promise<boolean> {
       stdout: "piped",
       stderr: "piped",
     });
-    let output1;
-    try {
-      output1 = await cmd1.output();
-    } finally {
-      await closeCommandStreams(cmd1);
-    }
+    const output1 = await cmd1.output();
     if (output1.success) return true;
 
     // 尝试 convert 命令
@@ -82,12 +56,7 @@ async function checkImageMagickAvailable(): Promise<boolean> {
       stdout: "piped",
       stderr: "piped",
     });
-    let output2;
-    try {
-      output2 = await cmd2.output();
-    } finally {
-      await closeCommandStreams(cmd2);
-    }
+    const output2 = await cmd2.output();
     return output2.success;
   } catch {
     return false;
