@@ -2,7 +2,8 @@
  * @fileoverview Image 客户端测试
  */
 
-import { describe, expect, it } from "@dreamer/test";
+import { IS_DENO } from "@dreamer/runtime-adapter";
+import { cleanupAllBrowsers, describe, expect, it } from "@dreamer/test";
 import { type ImageInfo } from "../src/client/mod.ts";
 
 describe("Image 客户端", () => {
@@ -91,4 +92,13 @@ describe("Image 客户端", () => {
       expect(info.size).toBe(1024000);
     });
   });
+
+  // Bun 下显式注册 cleanup 以与 Deno 数量一致（51）；Deno 下由 runner 注入，此处 skip
+  it.skipIf(
+    IS_DENO,
+    "\uFFFF@dreamer/test cleanup browsers",
+    async () => {
+      await cleanupAllBrowsers();
+    },
+  );
 });

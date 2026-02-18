@@ -1,0 +1,41 @@
+{
+  "install": {
+    "borderLine": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
+    "logDetectingBrew": "Detected Homebrew, attempting to install ImageMagick...",
+    "logInstallingWait": "This may take a few minutes, please wait...",
+    "logSuccess": "ImageMagick installed successfully!",
+    "warnFailAlreadyOrPermission": "Auto-install failed (may already be installed or need permission)",
+    "warnFailExitCode": "Auto-install failed (exit code: {code})",
+    "logNoBrew": "Homebrew not detected, cannot auto-install",
+    "logLinuxNeedManual": "Linux requires administrator permission, cannot auto-install",
+    "logLinuxRunCommands": "Please run the install command manually (see below)",
+    "logWindowsManual": "Windows requires manual download of the installer",
+    "warnAutoInstallError": "Error during auto-install: {message}",
+    "notFoundTitle": "ImageMagick is not installed or not found",
+    "macosAuto": "Auto-install (recommended):",
+    "macosManual": "Manual install:",
+    "macosManual1": "1. Ensure Homebrew is installed (https://brew.sh)",
+    "macosManual2": "2. Run: {command}",
+    "linuxCommands": "Install command:",
+    "linuxCommand": "{command}",
+    "linuxOther": "Or use another package manager:",
+    "linuxArch": "• Arch: sudo pacman -S imagemagick",
+    "linuxFedora": "• Fedora: sudo dnf install ImageMagick",
+    "linuxUsePackageManager": "Use your Linux distribution's package manager to install ImageMagick",
+    "windowsSteps": "Install steps:",
+    "windowsStep1": "1. Visit: {url}",
+    "windowsStep2": "2. Download the Windows installer",
+    "windowsStep3": "3. Run the installer and complete setup",
+    "windowsStep4": "4. Ensure ImageMagick bin directory is in your PATH",
+    "windowsDownload": "Visit {url} to download and install ImageMagick",
+    "otherOs": "Install ImageMagick according to your operating system",
+    "afterInstall": "After installation, please run the program again."
+  },
+  "log": {
+    "notFoundTryingInstall": "ImageMagick not found, attempting auto-install..."
+  },
+  "error": {
+    "notFound": "ImageMagick not found.{hint}",
+    "processFailed": "ImageMagick processing failed: {error}"
+  }
+}

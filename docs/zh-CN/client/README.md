@@ -3,7 +3,7 @@
 > 一个用于浏览器的图片处理库，提供图片处理、图片转换、图片压缩等功能
 
 [![JSR](https://jsr.io/badges/@dreamer/image/client)](https://jsr.io/@dreamer/image/client)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE.md)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../../LICENSE)
 
 ---
 
@@ -455,7 +455,8 @@ interface ImageInfo {
 
 ## 📄 许可证
 
-MIT License - 详见 [LICENSE.md](../../../LICENSE.md)
+Apache License 2.0 - 详见 [LICENSE](../../../LICENSE)。\
+[← 返回主文档](../README.md)
 
 ---
 
