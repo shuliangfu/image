@@ -1,0 +1,41 @@
+{
+  "install": {
+    "borderLine": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
+    "logDetectingBrew": "检测到 Homebrew，正在尝试安装 ImageMagick...",
+    "logInstallingWait": "这可能需要几分钟时间，请稍候...",
+    "logSuccess": "ImageMagick 安装成功！",
+    "warnFailAlreadyOrPermission": "自动安装失败（可能已安装或需要权限）",
+    "warnFailExitCode": "自动安装失败（退出码: {code}）",
+    "logNoBrew": "未检测到 Homebrew，无法自动安装",
+    "logLinuxNeedManual": "Linux 系统需要管理员权限，无法自动安装",
+    "logLinuxRunCommands": "请手动运行安装命令（见下方提示）",
+    "logWindowsManual": "Windows 系统需要手动下载安装程序",
+    "warnAutoInstallError": "自动安装过程中出错: {message}",
+    "notFoundTitle": "ImageMagick 未安装或未找到",
+    "macosAuto": "自动安装（推荐）：",
+    "macosManual": "手动安装：",
+    "macosManual1": "1. 确保已安装 Homebrew (https://brew.sh)",
+    "macosManual2": "2. 运行: {command}",
+    "linuxCommands": "安装命令：",
+    "linuxCommand": "{command}",
+    "linuxOther": "或者使用其他包管理器：",
+    "linuxArch": "• Arch: sudo pacman -S imagemagick",
+    "linuxFedora": "• Fedora: sudo dnf install ImageMagick",
+    "linuxUsePackageManager": "请使用您的 Linux 发行版的包管理器安装 ImageMagick",
+    "windowsSteps": "安装步骤：",
+    "windowsStep1": "1. 访问: {url}",
+    "windowsStep2": "2. 下载 Windows 安装程序",
+    "windowsStep3": "3. 运行安装程序并完成安装",
+    "windowsStep4": "4. 确保 ImageMagick 的 bin 目录在 PATH 环境变量中",
+    "windowsDownload": "请访问 {url} 下载并安装 ImageMagick",
+    "otherOs": "请根据您的操作系统安装 ImageMagick",
+    "afterInstall": "安装完成后，请重新运行程序。"
+  },
+  "log": {
+    "notFoundTryingInstall": "ImageMagick 未找到，尝试自动安装..."
+  },
+  "error": {
+    "notFound": "ImageMagick 未找到。{hint}",
+    "processFailed": "ImageMagick 处理失败: {error}"
+  }
+}

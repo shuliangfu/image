@@ -9,6 +9,16 @@
  */
 
 import {
+  $t,
+  ensureImageI18n,
+  initImageI18n,
+  type Locale,
+  setImageLocale,
+} from "./i18n.ts";
+
+initImageI18n();
+
+import {
   createCommand,
   IS_DENO,
   makeTempDir,
@@ -188,6 +198,8 @@ export interface ImageProcessorOptions {
   tempDir?: string;
   /** 是否自动尝试安装 ImageMagick（默认：true） */
   autoInstall?: boolean;
+  /** 服务端提示/错误文案语言（默认：从环境变量检测） */
+  lang?: Locale;
 }
 
 /**
@@ -213,7 +225,7 @@ function getOS(): "macos" | "linux" | "windows" | "unknown" {
 /**
  * 尝试自动安装 ImageMagick
  */
-async function tryAutoInstall(): Promise<boolean> {
+async function tryAutoInstall(lang?: Locale): Promise<boolean> {
   const os = getOS();
 
   try {
@@ -228,8 +240,8 @@ async function tryAutoInstall(): Promise<boolean> {
       const brewOutput = await brewCheck.output();
 
       if (brewOutput.success) {
-        console.log("🔍 检测到 Homebrew，正在尝试安装 ImageMagick...");
-        console.log("⏳ 这可能需要几分钟时间，请稍候...");
+        console.log("🔍", $t("install.logDetectingBrew"));
+        console.log("⏳", $t("install.logInstallingWait"));
 
         const installCmd = createCommand("brew", {
           args: ["install", "imagemagick"],
@@ -240,34 +252,41 @@ async function tryAutoInstall(): Promise<boolean> {
         const installOutput = await installCmd.output();
 
         if (installOutput.success) {
-          console.log("✅ ImageMagick 安装成功！");
+          console.log("✅", $t("install.logSuccess", undefined, lang));
           // 等待一下，确保命令可用
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 100));
           return true;
         } else {
           if (installOutput.code === 1) {
-            console.warn("⚠️  自动安装失败（可能已安装或需要权限）");
+            console.warn("⚠️", $t("install.warnFailAlreadyOrPermission"));
           } else {
-            console.warn(`⚠️  自动安装失败（退出码: ${installOutput.code}）`);
+            console.warn(
+              "⚠️",
+              $t("install.warnFailExitCode", {
+                code: String(installOutput.code),
+              }),
+            );
           }
         }
       } else {
-        console.log("ℹ️  未检测到 Homebrew，无法自动安装");
+        console.log("ℹ️", $t("install.logNoBrew"));
       }
     } else if (os === "linux") {
       // Linux: 需要 sudo 权限，无法自动安装
-      console.log("ℹ️  Linux 系统需要管理员权限，无法自动安装");
-      console.log("💡 请手动运行安装命令（见下方提示）");
+      console.log("ℹ️", $t("install.logLinuxNeedManual"));
+      console.log("💡", $t("install.logLinuxRunCommands"));
       return false;
     } else if (os === "windows") {
       // Windows: 需要下载安装程序，无法自动安装
-      console.log("ℹ️  Windows 系统需要手动下载安装程序");
+      console.log("ℹ️", $t("install.logWindowsManual"));
       return false;
     }
   } catch (error) {
     console.warn(
-      "⚠️  自动安装过程中出错:",
-      error instanceof Error ? error.message : String(error),
+      "⚠️",
+      $t("install.warnAutoInstallError", {
+        message: error instanceof Error ? error.message : String(error),
+      }),
     );
   }
 
@@ -317,47 +336,52 @@ async function getInstallHint(): Promise<string> {
             throw new Error("yum not available");
           }
         } catch {
-          installCommand = "请使用您的 Linux 发行版的包管理器安装 ImageMagick";
+          installCommand = $t("install.linuxUsePackageManager");
         }
       }
       break;
     case "windows":
       installUrl = "https://imagemagick.org/script/download.php";
-      installCommand = `请访问 ${installUrl} 下载并安装 ImageMagick`;
+      installCommand = $t("install.windowsDownload", { url: installUrl });
       break;
     default:
-      installCommand = "请根据您的操作系统安装 ImageMagick";
+      installCommand = $t("install.otherOs");
   }
 
+  const border = $t("install.borderLine");
   let hint = "\n";
-  hint += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-  hint += "  ImageMagick 未安装或未找到\n";
-  hint += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+  hint += border;
+  hint += "  " + $t("install.notFoundTitle") + "\n";
+  hint += border;
+  hint += "\n";
 
   if (os === "macos") {
-    hint += "📦 自动安装（推荐）：\n";
+    hint += "📦 " + $t("install.macosAuto") + "\n";
     hint += `   ${installCommand}\n\n`;
-    hint += "📝 手动安装：\n";
-    hint += "   1. 确保已安装 Homebrew (https://brew.sh)\n";
-    hint += `   2. 运行: ${installCommand}\n\n`;
+    hint += "📝 " + $t("install.macosManual") + "\n";
+    hint += "   1. " + $t("install.macosManual1") + "\n";
+    hint += "   2. " + $t("install.macosManual2", { command: installCommand }) +
+      "\n\n";
   } else if (os === "linux") {
-    hint += "📦 安装命令：\n";
-    hint += `   ${installCommand}\n\n`;
-    hint += "   或者使用其他包管理器：\n";
-    hint += "   • Arch: sudo pacman -S imagemagick\n";
-    hint += "   • Fedora: sudo dnf install ImageMagick\n\n";
+    hint += "📦 " + $t("install.linuxCommands") + "\n";
+    hint += "   " + $t("install.linuxCommand", { command: installCommand }) +
+      "\n\n";
+    hint += "   " + $t("install.linuxOther") + "\n";
+    hint += "   " + $t("install.linuxArch") + "\n";
+    hint += "   " + $t("install.linuxFedora") + "\n\n";
   } else if (os === "windows") {
-    hint += "📦 安装步骤：\n";
-    hint += `   1. 访问: ${installUrl}\n`;
-    hint += "   2. 下载 Windows 安装程序\n";
-    hint += "   3. 运行安装程序并完成安装\n";
-    hint += "   4. 确保 ImageMagick 的 bin 目录在 PATH 环境变量中\n\n";
+    hint += "📦 " + $t("install.windowsSteps") + "\n";
+    hint += "   " + $t("install.windowsStep1", { url: installUrl }) + "\n";
+    hint += "   " + $t("install.windowsStep2") + "\n";
+    hint += "   " + $t("install.windowsStep3") + "\n";
+    hint += "   " + $t("install.windowsStep4") + "\n\n";
   } else {
-    hint += `📦 安装命令：\n   ${installCommand}\n\n`;
+    hint += "📦 " + $t("install.linuxCommands") + "\n";
+    hint += "   " + installCommand + "\n\n";
   }
 
-  hint += "💡 安装完成后，请重新运行程序。\n";
-  hint += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+  hint += "💡 " + $t("install.afterInstall") + "\n";
+  hint += border;
 
   return hint;
 }
@@ -395,20 +419,25 @@ async function checkImageMagick(magickPath?: string): Promise<boolean> {
 async function ensureImageMagick(
   magickPath?: string,
   autoInstall: boolean = true,
+  lang?: Locale,
 ): Promise<string> {
-  // 先检查是否已安装
+  ensureImageI18n();
+  if (lang !== undefined) {
+    setImageLocale(lang);
+  } else {
+    initImageI18n();
+  }
+
   const isAvailable = await checkImageMagick(magickPath);
   if (isAvailable) {
     return await getMagickCommand(magickPath);
   }
 
-  // 如果未安装，尝试自动安装
   if (autoInstall) {
-    console.log("🔍 ImageMagick 未找到，尝试自动安装...");
+    console.log("🔍", $t("log.notFoundTryingInstall"));
     const installed = await tryAutoInstall();
 
     if (installed) {
-      // 安装后再次检查
       const isNowAvailable = await checkImageMagick(magickPath);
       if (isNowAvailable) {
         return await getMagickCommand(magickPath);
@@ -416,9 +445,8 @@ async function ensureImageMagick(
     }
   }
 
-  // 如果自动安装失败或未启用，抛出错误并显示安装提示
   const hint = await getInstallHint();
-  throw new Error(`ImageMagick 未找到。${hint}`);
+  throw new Error($t("error.notFound", { hint }));
 }
 
 /**
@@ -445,7 +473,7 @@ async function getMagickCommand(magickPath?: string): Promise<string> {
   }
 
   const hint = await getInstallHint();
-  throw new Error(`ImageMagick 未找到。${hint}`);
+  throw new Error($t("error.notFound", { hint }));
 }
 
 /**
@@ -578,7 +606,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error(`ImageMagick 处理失败: ${error}`);
+        throw new Error($t("error.processFailed", { error }));
       }
 
       const result = await readAndCleanup(outputFile);
@@ -633,7 +661,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error(`ImageMagick 处理失败: ${error}`);
+        throw new Error($t("error.processFailed", { error }));
       }
 
       const result = await readAndCleanup(outputFile);
@@ -675,9 +703,7 @@ class ImageMagickProcessor implements ImageProcessor {
     try {
       const args: string[] = [inputFile];
 
-      // 设置输出格式
-      args.push("-format", options.format.toUpperCase());
-
+      // 输出格式由 outputFile 扩展名决定，不单独传 -format
       // 根据格式和质量设置压缩参数
       if (options.quality !== undefined) {
         if (options.format === "png") {
@@ -708,7 +734,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error(`ImageMagick 处理失败: ${error}`);
+        throw new Error($t("error.processFailed", { error }));
       }
 
       const result = await readAndCleanup(outputFile);
@@ -865,7 +891,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error(`ImageMagick 处理失败: ${error}`);
+        throw new Error($t("error.processFailed", { error }));
       }
 
       const result = await readAndCleanup(outputFile);
@@ -915,7 +941,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error(`ImageMagick 处理失败: ${error}`);
+        throw new Error($t("error.processFailed", { error }));
       }
 
       const info = new TextDecoder().decode(output.stdout).trim();
@@ -963,6 +989,7 @@ export async function createImageProcessor(
   const magickCommand = await ensureImageMagick(
     options.magickPath,
     autoInstall,
+    options.lang,
   );
 
   return new ImageMagickProcessor(magickCommand, options.tempDir);
