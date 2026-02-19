@@ -329,9 +329,8 @@ install it. On other systems it shows install instructions and commands.
 
 ## Changelog
 
-- **[1.0.0]** (2026-02-18) — Stable release: server (ImageMagick) and client
-  (Canvas) APIs; resize, crop, convert, compress, addWatermark, extractInfo;
-  i18n for server messages. [Full changelog](./docs/en-US/CHANGELOG.md)
+**v1.0.1** (2026-02-19) — Changed: i18n translation method renamed from `$t` to
+`$tr`. [Full changelog](./docs/en-US/CHANGELOG.md)
 
 ## License
 

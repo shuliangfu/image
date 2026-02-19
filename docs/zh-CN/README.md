@@ -610,9 +610,8 @@ interface ImageInfo {
 
 ## 变更日志
 
-- **[1.0.0]** (2026-02-18) —
-  稳定版：服务端（ImageMagick）与客户端（Canvas）API；resize、crop、convert、compress、addWatermark、extractInfo；服务端消息
-  i18n。[完整变更](./CHANGELOG.md)
+**v1.0.1** (2026-02-19) — 变更：i18n 翻译方法由 `$t` 重命名为
+`$tr`。[完整变更](./CHANGELOG.md)
 
 ## 🤝 贡献
 
