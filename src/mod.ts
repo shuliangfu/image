@@ -8,13 +8,7 @@
  * 如果未安装 ImageMagick，会提示安装方法。
  */
 
-import {
-  $t,
-  ensureImageI18n,
-  initImageI18n,
-  type Locale,
-  setImageLocale,
-} from "./i18n.ts";
+import { $tr, initImageI18n, type Locale, setImageLocale } from "./i18n.ts";
 
 initImageI18n();
 
@@ -240,8 +234,8 @@ async function tryAutoInstall(lang?: Locale): Promise<boolean> {
       const brewOutput = await brewCheck.output();
 
       if (brewOutput.success) {
-        console.log("🔍", $t("install.logDetectingBrew"));
-        console.log("⏳", $t("install.logInstallingWait"));
+        console.log("🔍", $tr("install.logDetectingBrew"));
+        console.log("⏳", $tr("install.logInstallingWait"));
 
         const installCmd = createCommand("brew", {
           args: ["install", "imagemagick"],
@@ -252,39 +246,39 @@ async function tryAutoInstall(lang?: Locale): Promise<boolean> {
         const installOutput = await installCmd.output();
 
         if (installOutput.success) {
-          console.log("✅", $t("install.logSuccess", undefined, lang));
+          console.log("✅", $tr("install.logSuccess", undefined, lang));
           // 等待一下，确保命令可用
           await new Promise((resolve) => setTimeout(resolve, 100));
           return true;
         } else {
           if (installOutput.code === 1) {
-            console.warn("⚠️", $t("install.warnFailAlreadyOrPermission"));
+            console.warn("⚠️", $tr("install.warnFailAlreadyOrPermission"));
           } else {
             console.warn(
               "⚠️",
-              $t("install.warnFailExitCode", {
+              $tr("install.warnFailExitCode", {
                 code: String(installOutput.code),
               }),
             );
           }
         }
       } else {
-        console.log("ℹ️", $t("install.logNoBrew"));
+        console.log("ℹ️", $tr("install.logNoBrew"));
       }
     } else if (os === "linux") {
       // Linux: 需要 sudo 权限，无法自动安装
-      console.log("ℹ️", $t("install.logLinuxNeedManual"));
-      console.log("💡", $t("install.logLinuxRunCommands"));
+      console.log("ℹ️", $tr("install.logLinuxNeedManual"));
+      console.log("💡", $tr("install.logLinuxRunCommands"));
       return false;
     } else if (os === "windows") {
       // Windows: 需要下载安装程序，无法自动安装
-      console.log("ℹ️", $t("install.logWindowsManual"));
+      console.log("ℹ️", $tr("install.logWindowsManual"));
       return false;
     }
   } catch (error) {
     console.warn(
       "⚠️",
-      $t("install.warnAutoInstallError", {
+      $tr("install.warnAutoInstallError", {
         message: error instanceof Error ? error.message : String(error),
       }),
     );
@@ -336,51 +330,52 @@ async function getInstallHint(): Promise<string> {
             throw new Error("yum not available");
           }
         } catch {
-          installCommand = $t("install.linuxUsePackageManager");
+          installCommand = $tr("install.linuxUsePackageManager");
         }
       }
       break;
     case "windows":
       installUrl = "https://imagemagick.org/script/download.php";
-      installCommand = $t("install.windowsDownload", { url: installUrl });
+      installCommand = $tr("install.windowsDownload", { url: installUrl });
       break;
     default:
-      installCommand = $t("install.otherOs");
+      installCommand = $tr("install.otherOs");
   }
 
-  const border = $t("install.borderLine");
+  const border = $tr("install.borderLine");
   let hint = "\n";
   hint += border;
-  hint += "  " + $t("install.notFoundTitle") + "\n";
+  hint += "  " + $tr("install.notFoundTitle") + "\n";
   hint += border;
   hint += "\n";
 
   if (os === "macos") {
-    hint += "📦 " + $t("install.macosAuto") + "\n";
+    hint += "📦 " + $tr("install.macosAuto") + "\n";
     hint += `   ${installCommand}\n\n`;
-    hint += "📝 " + $t("install.macosManual") + "\n";
-    hint += "   1. " + $t("install.macosManual1") + "\n";
-    hint += "   2. " + $t("install.macosManual2", { command: installCommand }) +
+    hint += "📝 " + $tr("install.macosManual") + "\n";
+    hint += "   1. " + $tr("install.macosManual1") + "\n";
+    hint += "   2. " +
+      $tr("install.macosManual2", { command: installCommand }) +
       "\n\n";
   } else if (os === "linux") {
-    hint += "📦 " + $t("install.linuxCommands") + "\n";
-    hint += "   " + $t("install.linuxCommand", { command: installCommand }) +
+    hint += "📦 " + $tr("install.linuxCommands") + "\n";
+    hint += "   " + $tr("install.linuxCommand", { command: installCommand }) +
       "\n\n";
-    hint += "   " + $t("install.linuxOther") + "\n";
-    hint += "   " + $t("install.linuxArch") + "\n";
-    hint += "   " + $t("install.linuxFedora") + "\n\n";
+    hint += "   " + $tr("install.linuxOther") + "\n";
+    hint += "   " + $tr("install.linuxArch") + "\n";
+    hint += "   " + $tr("install.linuxFedora") + "\n\n";
   } else if (os === "windows") {
-    hint += "📦 " + $t("install.windowsSteps") + "\n";
-    hint += "   " + $t("install.windowsStep1", { url: installUrl }) + "\n";
-    hint += "   " + $t("install.windowsStep2") + "\n";
-    hint += "   " + $t("install.windowsStep3") + "\n";
-    hint += "   " + $t("install.windowsStep4") + "\n\n";
+    hint += "📦 " + $tr("install.windowsSteps") + "\n";
+    hint += "   " + $tr("install.windowsStep1", { url: installUrl }) + "\n";
+    hint += "   " + $tr("install.windowsStep2") + "\n";
+    hint += "   " + $tr("install.windowsStep3") + "\n";
+    hint += "   " + $tr("install.windowsStep4") + "\n\n";
   } else {
-    hint += "📦 " + $t("install.linuxCommands") + "\n";
+    hint += "📦 " + $tr("install.linuxCommands") + "\n";
     hint += "   " + installCommand + "\n\n";
   }
 
-  hint += "💡 " + $t("install.afterInstall") + "\n";
+  hint += "💡 " + $tr("install.afterInstall") + "\n";
   hint += border;
 
   return hint;
@@ -421,11 +416,8 @@ async function ensureImageMagick(
   autoInstall: boolean = true,
   lang?: Locale,
 ): Promise<string> {
-  ensureImageI18n();
   if (lang !== undefined) {
     setImageLocale(lang);
-  } else {
-    initImageI18n();
   }
 
   const isAvailable = await checkImageMagick(magickPath);
@@ -434,7 +426,7 @@ async function ensureImageMagick(
   }
 
   if (autoInstall) {
-    console.log("🔍", $t("log.notFoundTryingInstall"));
+    console.log("🔍", $tr("log.notFoundTryingInstall"));
     const installed = await tryAutoInstall();
 
     if (installed) {
@@ -446,7 +438,7 @@ async function ensureImageMagick(
   }
 
   const hint = await getInstallHint();
-  throw new Error($t("error.notFound", { hint }));
+  throw new Error($tr("error.notFound", { hint }));
 }
 
 /**
@@ -473,7 +465,7 @@ async function getMagickCommand(magickPath?: string): Promise<string> {
   }
 
   const hint = await getInstallHint();
-  throw new Error($t("error.notFound", { hint }));
+  throw new Error($tr("error.notFound", { hint }));
 }
 
 /**
@@ -606,7 +598,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error($t("error.processFailed", { error }));
+        throw new Error($tr("error.processFailed", { error }));
       }
 
       const result = await readAndCleanup(outputFile);
@@ -661,7 +653,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error($t("error.processFailed", { error }));
+        throw new Error($tr("error.processFailed", { error }));
       }
 
       const result = await readAndCleanup(outputFile);
@@ -734,7 +726,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error($t("error.processFailed", { error }));
+        throw new Error($tr("error.processFailed", { error }));
       }
 
       const result = await readAndCleanup(outputFile);
@@ -891,7 +883,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error($t("error.processFailed", { error }));
+        throw new Error($tr("error.processFailed", { error }));
       }
 
       const result = await readAndCleanup(outputFile);
@@ -941,7 +933,7 @@ class ImageMagickProcessor implements ImageProcessor {
       const output = await cmd.output();
       if (!output.success) {
         const error = new TextDecoder().decode(output.stderr);
-        throw new Error($t("error.processFailed", { error }));
+        throw new Error($tr("error.processFailed", { error }));
       }
 
       const info = new TextDecoder().decode(output.stdout).trim();

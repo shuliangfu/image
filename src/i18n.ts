@@ -2,14 +2,13 @@
  * @module @dreamer/image/i18n
  *
  * Server-side i18n for @dreamer/image: install hints, console messages,
- * and error messages. When lang is not passed, locale is auto-detected from
- * env (LANGUAGE / LC_ALL / LANG). Client code is not translated.
+ * and error messages. No global; use import $tr. When lang is not passed,
+ * locale is auto-detected from env (LANGUAGE / LC_ALL / LANG).
  */
 
 import {
-  $i18n,
-  getGlobalI18n,
-  getI18n,
+  createI18n,
+  type I18n,
   type TranslationData,
   type TranslationParams,
 } from "@dreamer/i18n";
@@ -25,11 +24,16 @@ export const DEFAULT_LOCALE: Locale = "en-US";
 
 const IMAGE_LOCALES: Locale[] = ["en-US", "zh-CN"];
 
-let imageTranslationsLoaded = false;
+const LOCALE_DATA: Record<string, TranslationData> = {
+  "en-US": enUS as TranslationData,
+  "zh-CN": zhCN as TranslationData,
+};
+
+/** init 时创建的实例，不挂全局 */
+let imageI18n: I18n | null = null;
 
 /**
  * Detect locale from env: LANGUAGE > LC_ALL > LANG.
- * Returns DEFAULT_LOCALE when unset or not in supported list.
  */
 export function detectLocale(): Locale {
   const langEnv = getEnv("LANGUAGE") || getEnv("LC_ALL") || getEnv("LANG");
@@ -50,47 +54,46 @@ export function detectLocale(): Locale {
 }
 
 /**
- * Load image package translations into the current I18n instance (once).
- */
-export function ensureImageI18n(): void {
-  if (imageTranslationsLoaded) return;
-  const i18n = getGlobalI18n() ?? getI18n();
-  i18n.loadTranslations("en-US", enUS as TranslationData);
-  i18n.loadTranslations("zh-CN", zhCN as TranslationData);
-  imageTranslationsLoaded = true;
-}
-
-/**
  * Load translations and set current locale. Call once before first server use.
  */
 export function initImageI18n(): void {
-  ensureImageI18n();
-  $i18n.setLocale(detectLocale());
+  if (imageI18n) return;
+  const i18n = createI18n({
+    defaultLocale: DEFAULT_LOCALE,
+    fallbackBehavior: "default",
+    locales: [...IMAGE_LOCALES],
+    translations: LOCALE_DATA as Record<string, TranslationData>,
+  });
+  i18n.setLocale(detectLocale());
+  imageI18n = i18n;
 }
 
 /**
  * Set current locale for image messages (e.g. from createImageProcessor({ lang })).
  */
 export function setImageLocale(lang: Locale): void {
-  ensureImageI18n();
-  $i18n.setLocale(lang);
+  initImageI18n();
+  if (imageI18n) imageI18n.setLocale(lang);
 }
+
 /**
- * 按 key 翻译。未传 lang 时使用当前 locale（在 initImageI18n / setImageLocale 中已设置）。
+ * 框架专用翻译。未传 lang 时使用当前 locale。
  */
-export function $t(
+export function $tr(
   key: string,
   params?: TranslationParams,
   lang?: Locale,
 ): string {
+  if (!imageI18n) initImageI18n();
+  if (!imageI18n) return key;
   if (lang !== undefined) {
-    const prev = $i18n.getLocale();
-    $i18n.setLocale(lang);
+    const prev = imageI18n.getLocale();
+    imageI18n.setLocale(lang);
     try {
-      return $i18n.t(key, params);
+      return imageI18n.t(key, params);
     } finally {
-      $i18n.setLocale(prev);
+      imageI18n.setLocale(prev);
     }
   }
-  return $i18n.t(key, params);
+  return imageI18n.t(key, params);
 }
