@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.2] - 2026-02-19
+
+### Changed
+
+- **i18n**: Initialization now runs automatically when the i18n module is
+  loaded. Entry files no longer import or call `initImageI18n`; remove any such
+  usage from your code.
+
+---
+
 ## [1.0.1] - 2026-02-19
 
 ### Changed

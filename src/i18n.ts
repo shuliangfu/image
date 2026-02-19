@@ -53,10 +53,8 @@ export function detectLocale(): Locale {
   return DEFAULT_LOCALE;
 }
 
-/**
- * Load translations and set current locale. Call once before first server use.
- */
-export function initImageI18n(): void {
+/** 内部初始化，导入 i18n 时自动执行，不导出 */
+function initImageI18n(): void {
   if (imageI18n) return;
   const i18n = createI18n({
     defaultLocale: DEFAULT_LOCALE,
@@ -67,6 +65,8 @@ export function initImageI18n(): void {
   i18n.setLocale(detectLocale());
   imageI18n = i18n;
 }
+
+initImageI18n();
 
 /**
  * Set current locale for image messages (e.g. from createImageProcessor({ lang })).

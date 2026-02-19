@@ -8,9 +8,7 @@
  * 如果未安装 ImageMagick，会提示安装方法。
  */
 
-import { $tr, initImageI18n, type Locale, setImageLocale } from "./i18n.ts";
-
-initImageI18n();
+import { $tr, type Locale, setImageLocale } from "./i18n.ts";
 
 import {
   createCommand,

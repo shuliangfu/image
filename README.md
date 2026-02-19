@@ -329,8 +329,8 @@ install it. On other systems it shows install instructions and commands.
 
 ## Changelog
 
-**v1.0.1** (2026-02-19) — Changed: i18n translation method renamed from `$t` to
-`$tr`. [Full changelog](./docs/en-US/CHANGELOG.md)
+**v1.0.2** (2026-02-19) — Changed: i18n init runs automatically in module; entry
+files no longer call init. [Full changelog](./docs/en-US/CHANGELOG.md)
 
 ## License
 
