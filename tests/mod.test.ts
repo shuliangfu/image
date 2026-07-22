@@ -9,13 +9,10 @@ import {
   type ConvertOptions,
   createImageProcessor,
   type CropOptions,
-  extractInfo,
   type ImageInfo,
-  resize,
   type ResizeOptions,
   type WatermarkOptions,
 } from "../src/mod.ts";
-
 describe("Image 服务端", () => {
   describe("createImageProcessor", () => {
     it("应该在 ImageMagick 不可用时抛出错误", async () => {
@@ -50,7 +47,9 @@ describe("Image 服务端", () => {
     it("应该在文件不存在时抛出错误", async () => {
       let error: Error | null = null;
       try {
-        await resize("nonexistent-image.jpg", { width: 100 });
+        // 使用 autoInstall: false 避免 CI 上触发 brew install 超时
+        const processor = await createImageProcessor({ autoInstall: false });
+        await processor.resize("nonexistent-image.jpg", { width: 100 });
       } catch (e) {
         error = e as Error;
       }
@@ -218,7 +217,9 @@ describe("Image 服务端", () => {
     it("应该在文件不存在时抛出错误", async () => {
       let error: Error | null = null;
       try {
-        await extractInfo("nonexistent-image.jpg");
+        // 使用 autoInstall: false 避免 CI 上触发 brew install 超时
+        const processor = await createImageProcessor({ autoInstall: false });
+        await processor.extractInfo("nonexistent-image.jpg");
       } catch (e) {
         error = e as Error;
       }

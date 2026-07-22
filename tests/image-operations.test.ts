@@ -96,8 +96,23 @@ describe("图片实际操作", () => {
     if (!imagemagickAvailable) {
       console.log("⚠️  ImageMagick 未安装，跳过实际图片操作测试");
     } else {
-      console.log("✅ ImageMagick 可用，开始实际图片操作测试");
-      await ensureOutputDir(paths.OUTPUT_DIR);
+      // CI 上 tests/data 被 gitignore，数据文件可能不存在（如 Windows CI 自带 ImageMagick）
+      let dataFilesAvailable = false;
+      try {
+        const fileStat = await stat(paths.IMAGE1);
+        dataFilesAvailable = fileStat.isFile;
+      } catch {
+        dataFilesAvailable = false;
+      }
+      if (!dataFilesAvailable) {
+        console.log(
+          "⚠️  测试数据文件不存在（tests/data 被 gitignore），跳过实际图片操作测试",
+        );
+        imagemagickAvailable = false;
+      } else {
+        console.log("✅ ImageMagick 可用，开始实际图片操作测试");
+        await ensureOutputDir(paths.OUTPUT_DIR);
+      }
     }
   });
 
