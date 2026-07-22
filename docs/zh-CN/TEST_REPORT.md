@@ -4,30 +4,42 @@
 
 本报告记录 `@dreamer/image`
 包的测试覆盖与结果。该包提供服务端图片处理（ImageMagick）与客户端 API
-封装（resize、crop、convert、compress、addWatermark、extractInfo），支持 Deno 与
-Bun 双运行时。
+封装（resize、crop、convert、compress、addWatermark、extractInfo），支持 Deno、
+Bun 与 Node.js 三运行时。
 
 | 项目             | 取值                                          |
 | ---------------- | --------------------------------------------- |
-| **测试日期**     | 2026-02-18                                    |
-| **包版本**       | 1.0.0-beta.3                                  |
-| **运行时适配器** | @dreamer/runtime-adapter ^1.0.13              |
-| **测试框架**     | @dreamer/test ^1.0.8、Deno 内置测试、Bun test |
-| **测试环境**     | Deno 2.6+ / Bun 1.3.5+                        |
+| **测试日期**     | 2026-07-23                                    |
+| **包版本**       | 1.1.0                                         |
+| **运行时适配器** | @dreamer/runtime-adapter ^1.2.2               |
+| **测试框架**     | @dreamer/test ^1.2.3、Deno 内置测试、Bun test、Node tsx --test |
+| **测试环境**     | Deno 2.9+ / Bun 1.3+ / Node.js 22+            |
 
 ## 测试结果
 
 ### 总体统计
 
-| 指标                          | 数值                          |
-| ----------------------------- | ----------------------------- |
-| 测试文件数                    | 5                             |
-| 测试用例总数                  | 64                            |
-| 通过                          | 60                            |
-| 跳过（cleanup，仅 Deno 跳过） | 4                             |
-| 失败                          | 0                             |
-| 通过率                        | 100%                          |
-| 执行时间                      | 约 23s（Deno）、约 22s（Bun） |
+| 指标                          | 数值                              |
+| ----------------------------- | --------------------------------- |
+| 测试文件数                    | 5（Deno/Bun）/ 2（Node）          |
+| 测试用例总数                  | 64（Deno）/ 58（Bun）/ 28（Node） |
+| 通过                          | 60 / 58 / 28 ✅                    |
+| 跳过（cleanup，仅 Deno 跳过） | 4（Deno）/ 0（Bun）/ 0（Node）    |
+| 失败                          | 0                                 |
+| 通过率                        | 100% ✅                            |
+| 执行时间                      | 约 19s（Deno）/ 约 17s（Bun）/ 约 10s（Node） |
+
+### 三端测试摘要
+
+三端全部通过。Deno 与 Bun 运行完整套件（5 个文件，含 Playwright Chromium 浏览器
+测试）；Node 仅运行服务端测试（2 个文件：`mod.test.ts` +
+`image-operations.test.ts`），因为浏览器测试需 Chromium + @dreamer/esbuild（按项目
+规范在 Node CI 中排除）。`image-operations.test.ts` 在未安装 ImageMagick 时自动
+跳过（`checkImageMagickAvailable()`）。
+
+- **Deno（64 条）**：60 通过，4 忽略（cleanup，仅 Deno 跳过）。
+- **Bun（58 条）**：58 通过（cleanup 在 Bun 上运行，不跳过）。
+- **Node.js 22（28 条）**：28 通过（仅服务端测试）。
 
 ### 测试文件汇总
 
@@ -249,14 +261,14 @@ Bun 双运行时。
 
 ## 结论
 
-`@dreamer/image` 在 5 个文件中共 64 个测试用例，每次运行 60 例通过（4 例为 Deno
-下跳过的 cleanup）。结果表明：
+`@dreamer/image` 在 5 个文件中共 64 个测试用例（Deno/Bun），Node 上 28 个服务端
+测试。全部通过（4 例为 Deno 下跳过的 cleanup）。结果表明：
 
 1. ✅ **服务端 API**：选项校验与错误处理符合预期。
 2. ✅ **客户端 API**：选项校验、mock 行为与真实浏览器行为均被验证。
 3. ✅ **实际操作**：在 ImageMagick
    可用时，resize、crop、convert、compress、addWatermark、extractInfo 均被覆盖。
-4. ✅ **兼容性**：Deno 与 Bun 下测试均通过。
+4. ✅ **兼容性**：Deno、Bun 与 Node.js 22+ 下测试均通过。
 5. ✅
    **稳定**：无失败用例；可选依赖（ImageMagick、Chromium）在文档中说明并在缺失时妥善处理。
 
@@ -264,6 +276,6 @@ Bun 双运行时。
 
 ---
 
-**报告生成日期**：2026-02-18\
-**执行方式**：`deno test -A tests` → 60 通过、4 忽略（约 23s）；`bun test tests`
-→ 60 通过（约 22s）。
+**报告生成日期**：2026-07-23\
+**执行方式**：`deno test -A tests` → 60 通过、4 忽略（约 19s）；`bun test tests`
+→ 58 通过（约 17s）；`npm run test:node` → 28 通过（约 10s）。

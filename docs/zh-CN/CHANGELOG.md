@@ -7,6 +7,39 @@
 
 ---
 
+## [1.1.0] - 2026-07-23
+
+### 新增
+
+- **Node.js 兼容**：image 现可在 Node.js 22+ 上运行，与 Deno、Bun 三端共用。
+  所有文件系统、环境与进程操作均经 `@dreamer/runtime-adapter`（v1.2.2，已支持
+  Node）。**无需修改 `src/`**——`getOS()` 已通过 `process.platform` else 分支支持
+  Bun/Node，ImageMagick 调用使用跨运行时 `createCommand().output()` API。
+- **Node 测试基础设施**：`package.json` 含 `test:node` 脚本
+  （`tsx --tsconfig tsconfig.json --test --test-force-exit tests/mod.test.ts
+  tests/image-operations.test.ts`）、`tsconfig.json`。浏览器测试
+  （`client-browser.test.ts`、`client.test.ts`、`client-mock.test.ts`）在 Node CI
+  中排除（需 Chromium + @dreamer/esbuild）。`image-operations.test.ts` 在未安装
+  ImageMagick 时自动跳过（`checkImageMagickAvailable()`）。
+- **CI 工作流**新建（9 个 job — 3 Deno v2.9 + 3 Bun + 3 Node 22）。Deno/Bun job
+  安装 Playwright Chromium 1.59.1 并运行全部测试（含浏览器）；Windows Bun 仅跑
+  服务端测试（避开 chromium hang bug，oven-sh/bun#15679）；Node job 运行
+  `test:node`（不安装 Chromium）。
+- `deno.json` 添加 `minimumDependencyAge: 0` 与 `nodeModulesDir: "auto"`，以兼容
+  当日发布的 `@dreamer/*` 依赖。
+
+### 变更
+
+- 依赖升级：`@dreamer/i18n` ^1.1.2、`@dreamer/test` ^1.2.3、
+  `@dreamer/runtime-adapter` ^1.2.2。
+- `publish.yml` 使用 `npx jsr publish`（发布时类型检查）。
+
+### 文档
+
+- 中英文测试报告更新为三端结果：Deno 60（4 忽略）、Bun 58、Node 28。
+
+---
+
 ## [1.0.2] - 2026-02-19
 
 ### 变更

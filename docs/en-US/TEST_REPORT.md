@@ -5,29 +5,42 @@
 This report records test coverage and results for the `@dreamer/image` package.
 The package provides server-side image processing (ImageMagick) and client-side
 API wrappers for resize, crop, convert, compress, addWatermark, and extractInfo,
-with support for both Deno and Bun runtimes.
+with support for Deno, Bun, and Node.js runtimes.
 
 | Item                 | Value                                              |
 | -------------------- | -------------------------------------------------- |
-| **Test Date**        | 2026-02-18                                         |
-| **Package Version**  | 1.0.0-beta.3                                       |
-| **Runtime Adapter**  | @dreamer/runtime-adapter ^1.0.13                   |
-| **Test Framework**   | @dreamer/test ^1.0.8, Deno built-in test, Bun test |
-| **Test Environment** | Deno 2.6+ / Bun 1.3.5+                             |
+| **Test Date**        | 2026-07-23                                         |
+| **Package Version**  | 1.1.0                                              |
+| **Runtime Adapter**  | @dreamer/runtime-adapter ^1.2.2                    |
+| **Test Framework**   | @dreamer/test ^1.2.3, Deno built-in test, Bun test, Node tsx --test |
+| **Test Environment** | Deno 2.9+ / Bun 1.3+ / Node.js 22+                 |
 
 ## Test Results
 
 ### Overall Statistics
 
-| Metric                       | Value                   |
-| ---------------------------- | ----------------------- |
-| Number of test files         | 5                       |
-| Total test cases             | 64                      |
-| Passed                       | 60                      |
-| Skipped (cleanup, Deno-only) | 4                       |
-| Failed                       | 0                       |
-| Pass rate                    | 100%                    |
-| Execution time               | ~23s (Deno), ~22s (Bun) |
+| Metric                       | Value                          |
+| ---------------------------- | ------------------------------ |
+| Number of test files         | 5 (Deno/Bun) / 2 (Node)        |
+| Total test cases             | 64 (Deno) / 58 (Bun) / 28 (Node) |
+| Passed                       | 60 / 58 / 28 ✅                 |
+| Skipped (cleanup, Deno-only) | 4 (Deno) / 0 (Bun) / 0 (Node)  |
+| Failed                       | 0                              |
+| Pass rate                    | 100% ✅                         |
+| Execution time               | ~19s (Deno) / ~17s (Bun) / ~10s (Node) |
+
+### Three-end test summary
+
+All tests pass across three runtimes. Deno and Bun run the full suite (5 files,
+including browser tests via Playwright Chromium); Node runs server-side tests
+only (2 files: `mod.test.ts` + `image-operations.test.ts`), as browser tests
+require Chromium + @dreamer/esbuild (excluded from Node CI per project
+convention). `image-operations.test.ts` skips gracefully when ImageMagick is not
+installed (`checkImageMagickAvailable()`).
+
+- **Deno (64 tests)**: 60 passed, 4 ignored (cleanup, Deno-only).
+- **Bun (58 tests)**: 58 passed (cleanup runs on Bun, not skipped).
+- **Node.js 22 (28 tests)**: 28 passed (server-side tests only).
 
 ### Test File Summary
 
@@ -252,15 +265,16 @@ with support for both Deno and Bun runtimes.
 
 ## Conclusion
 
-The `@dreamer/image` package is covered by 64 test cases across 5 files. Sixty
-tests pass per run (4 cleanup tests are skipped on Deno). Results show:
+The `@dreamer/image` package is covered by 64 test cases across 5 files (Deno/Bun)
+and 28 server-side tests on Node. All pass (4 cleanup tests skipped on Deno).
+Results show:
 
 1. ✅ **Server API**: Option validation and error handling behave as expected.
 2. ✅ **Client API**: Option validation, mock-based behavior, and real-browser
    behavior are verified.
 3. ✅ **Real operations**: When ImageMagick is available, resize, crop, convert,
    compress, addWatermark, and extractInfo are exercised.
-4. ✅ **Compatibility**: Tests pass under both Deno and Bun.
+4. ✅ **Compatibility**: Tests pass under Deno, Bun, and Node.js 22+.
 5. ✅ **Stability**: No failing tests; optional services (ImageMagick, Chromium)
    are documented and handled when absent.
 

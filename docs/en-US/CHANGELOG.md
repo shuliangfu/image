@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.0] - 2026-07-23
+
+### Added
+
+- **Node.js compatibility**: Image now runs on Node.js 22+ alongside Deno and
+  Bun. All filesystem, environment, and process operations go through
+  `@dreamer/runtime-adapter` (v1.2.2, Node-supported). No `src/` changes needed
+  — `getOS()` already falls through to `process.platform` for Bun/Node, and
+  ImageMagick invocations use the cross-runtime `createCommand().output()` API.
+- **Node test infrastructure**: `package.json` with `test:node` script
+  (`tsx --tsconfig tsconfig.json --test --test-force-exit tests/mod.test.ts
+  tests/image-operations.test.ts`), `tsconfig.json`. Browser tests
+  (`client-browser.test.ts`, `client.test.ts`, `client-mock.test.ts`) excluded
+  from Node CI (require Chromium + @dreamer/esbuild). `image-operations.test.ts`
+  skips gracefully when ImageMagick is not installed
+  (`checkImageMagickAvailable()`).
+- **CI workflow** created (9 jobs — 3 Deno v2.9 + 3 Bun + 3 Node 22). Deno/Bun
+  jobs install Playwright Chromium 1.59.1 and run all tests (including browser);
+  Windows Bun runs server-side tests only (avoids chromium hang bug,
+  oven-sh/bun#15679); Node jobs run `test:node` (no Chromium).
+- `minimumDependencyAge: 0` and `nodeModulesDir: "auto"` in `deno.json` for
+  freshly published `@dreamer/*` dependencies.
+
+### Changed
+
+- Dependencies upgraded: `@dreamer/i18n` ^1.1.2, `@dreamer/test` ^1.2.3,
+  `@dreamer/runtime-adapter` ^1.2.2.
+- `publish.yml` uses `npx jsr publish` (type-check on publish).
+
+### Documentation
+
+- Test report (en-US and zh-CN) updated to three-end results: Deno 60 (4
+  ignored), Bun 58, Node 28.
+
+---
+
 ## [1.0.2] - 2026-02-19
 
 ### Changed
