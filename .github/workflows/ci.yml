@@ -2,6 +2,7 @@
 # image 含 client-browser.test.ts（依赖 @dreamer/esbuild 打包 + Chromium），
 # 故 Deno/Bun CI 安装 Chromium 跑全部用例；Node/Windows-Bun CI 仅跑服务端用例（无 Chromium）。
 # image-operations.test.ts 需 ImageMagick，CI 未安装时自动跳过（checkImageMagickAvailable）。
+# Linux 固定 ubuntu-24.04：playwright@1.59.1 不支持 ubuntu-latest（26.04）上的 Chromium。
 name: CI
 
 on:
@@ -20,7 +21,7 @@ jobs:
   # Deno 三平台测试（linux 同时负责 check / lint）
   # ─────────────────────────────────────────────────────────────
   test-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -96,7 +97,7 @@ jobs:
   # image 有运行时依赖（i18n, runtime-adapter）；bun install 解析 package.json
   # ─────────────────────────────────────────────────────────────
   test-linux-bun:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -171,7 +172,7 @@ jobs:
   #   - Node CI 不安装 Chromium，符合 Node 兼容规范
   # ─────────────────────────────────────────────────────────────
   test-linux-node:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
