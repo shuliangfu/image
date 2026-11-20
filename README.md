@@ -329,8 +329,10 @@ install it. On other systems it shows install instructions and commands.
 
 ## Changelog
 
-**v1.0.2** (2026-02-19) — Changed: i18n init runs automatically in module; entry
-files no longer call init. [Full changelog](./docs/en-US/CHANGELOG.md)
+**v1.1.1** (2026-11-20) — Fixed: converting a multi-frame GIF to a single-frame
+format now reads ImageMagick's `name-0.ext` output and cleans up frame files;
+Node tests disable worker isolation to avoid flaky macOS CI. Changed: Linux CI
+runners pinned to ubuntu-24.04. [Full changelog](./docs/en-US/CHANGELOG.md)
 
 ## License
 

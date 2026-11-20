@@ -7,6 +7,25 @@
 
 ---
 
+## [1.1.1] - 2026-11-20
+
+### 修复
+
+- **GIF / 多帧转换：** ImageMagick 将多帧输入（如动画
+  GIF）转为单帧格式时，会写成 `name-0.ext` 而不是期望的
+  `name.ext`。`readAndCleanup` 现在会回退读取第一帧， 并清理所有帧文件，避免
+  `convert` 因找不到输出文件而失败。
+- **macOS CI 上的 Node 测试：** `test:node` 增加
+  `--experimental-test-isolation=none`，避免 `node:test` worker IPC 偶发 "Unable
+  to deserialize cloned data due to invalid or unsupported version" 失败。
+
+### 变更
+
+- **CI：** Linux job 固定为 `ubuntu-24.04`，以保证 Playwright Chromium 能稳定
+  安装并运行。
+
+---
+
 ## [1.1.0] - 2026-07-23
 
 ### 新增

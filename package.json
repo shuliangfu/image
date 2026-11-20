@@ -1,6 +1,6 @@
 {
   "name": "@dreamer/image",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Image utilities for Deno/Bun/Node.",
   "type": "module",
   "license": "Apache-2.0",

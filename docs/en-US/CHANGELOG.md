@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.1] - 2026-11-20
+
+### Fixed
+
+- **GIF / multi-frame convert:** When ImageMagick converts a multi-frame input
+  (such as an animated GIF) to a single-frame format, it writes `name-0.ext`
+  instead of the expected `name.ext`. `readAndCleanup` now falls back to the
+  first frame and cleans up all frame files, so `convert` no longer fails with a
+  missing-file error.
+- **Node tests on macOS CI:** `test:node` now runs with
+  `--experimental-test-isolation=none` to avoid intermittent "Unable to
+  deserialize cloned data due to invalid or unsupported version" failures from
+  `node:test` worker IPC.
+
+### Changed
+
+- **CI:** Linux jobs are pinned to `ubuntu-24.04` so Playwright Chromium can
+  install and run reliably.
+
+---
+
 ## [1.1.0] - 2026-07-23
 
 ### Added

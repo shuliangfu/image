@@ -610,8 +610,10 @@ interface ImageInfo {
 
 ## 变更日志
 
-**v1.0.2** (2026-02-19) — 变更：i18n 在模块加载时自动初始化，入口文件不再调用
-init。[完整变更](./CHANGELOG.md)
+**v1.1.1** (2026-11-20) — 修复：将多帧 GIF 转为单帧格式时，会读取 ImageMagick
+写出的 `name-0.ext` 并清理各帧文件；Node 测试关闭 worker isolation，避免 macOS
+CI 偶发失败。变更：Linux CI runner 固定为
+ubuntu-24.04。[完整变更](./CHANGELOG.md)
 
 ## 🤝 贡献
 
