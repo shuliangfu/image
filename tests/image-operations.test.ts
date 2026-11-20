@@ -520,6 +520,70 @@ describe("图片实际操作", () => {
     });
   });
 
+  describe("gif 转 jpeg", () => {
+    it("应该将动画 GIF resize 并转换为 jpeg", async () => {
+      const gifMagickAvailable = await checkImageMagickAvailable();
+      if (!gifMagickAvailable) {
+        console.log("⏭️  跳过：ImageMagick 不可用");
+        return;
+      }
+
+      const outputDir = paths?.OUTPUT_DIR ??
+        (await getPaths()).OUTPUT_DIR;
+      await ensureOutputDir(outputDir);
+
+      const gifPath = join(outputDir, "anim.gif");
+      const cmd = createCommand("magick", {
+        args: [
+          "-delay",
+          "20",
+          "-size",
+          "40x30",
+          "xc:red",
+          "xc:green",
+          "xc:blue",
+          "-loop",
+          "0",
+          gifPath,
+        ],
+        stdout: "piped",
+        stderr: "piped",
+      });
+      const created = await cmd.output();
+      if (!created.success) {
+        const error = new TextDecoder().decode(created.stderr);
+        throw new Error(`failed to create test gif: ${error}`);
+      }
+
+      const gifBuffer = await readFile(gifPath);
+      const resizedThumb = await resize(gifBuffer, {
+        width: 150,
+        fit: "contain",
+        quality: 90,
+      });
+      expect(resizedThumb.byteLength).toBeGreaterThan(0);
+
+      const jpegData = await convert(resizedThumb, {
+        format: "jpeg",
+        quality: 100,
+      });
+      const output = join(outputDir, "anim-converted.jpg");
+      await writeFile(output, jpegData);
+      const outputStat = await stat(output);
+      expect(outputStat.isFile).toBeTruthy();
+      expect(outputStat.size).toBeGreaterThan(0);
+
+      const info = await extractInfo(output);
+      expect(info.format.toLowerCase()).toBe("jpeg");
+
+      const directJpeg = await convert(gifBuffer, {
+        format: "jpeg",
+        quality: 100,
+      });
+      expect(directJpeg.byteLength).toBeGreaterThan(0);
+    });
+  });
+
   // 保留测试输出文件（不清理）
   it("测试完成，输出文件保留在 tests/output 目录", async () => {
     if (imagemagickAvailable) {

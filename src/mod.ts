@@ -483,16 +483,63 @@ async function createTempFile(
 }
 
 /**
- * 读取临时文件并删除
+ * ImageMagick 在输入为多帧（如动画 GIF）且输出为单帧格式时，
+ * 会写成 name-0.ext、name-1.ext，而不是期望的 name.ext。
  */
-async function readAndCleanup(tempFile: string): Promise<Uint8Array> {
-  const data = await readFile(tempFile);
+function magickFramePath(outputFile: string, index: number): string {
+  const lastDot = outputFile.lastIndexOf(".");
+  if (lastDot <= 0) return `${outputFile}-${index}`;
+  return `${outputFile.slice(0, lastDot)}-${index}${outputFile.slice(lastDot)}`;
+}
+
+async function pathExists(path: string): Promise<boolean> {
   try {
-    await remove(tempFile);
+    await stat(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** 删除期望输出文件及 ImageMagick 拆出的各帧文件 */
+async function cleanupMagickOutputs(outputFile: string): Promise<void> {
+  try {
+    await remove(outputFile);
   } catch {
     // 忽略删除错误
   }
-  return data;
+  for (let i = 0; i < 1000; i++) {
+    const frame = magickFramePath(outputFile, i);
+    if (!(await pathExists(frame))) break;
+    try {
+      await remove(frame);
+    } catch {
+      break;
+    }
+  }
+}
+
+/**
+ * 读取临时文件并删除
+ *
+ * 若期望路径不存在，则回退读取 ImageMagick 多帧输出的第一帧（name-0.ext）。
+ */
+async function readAndCleanup(tempFile: string): Promise<Uint8Array> {
+  let target = tempFile;
+  if (!(await pathExists(tempFile))) {
+    const frame0 = magickFramePath(tempFile, 0);
+    if (await pathExists(frame0)) {
+      target = frame0;
+    }
+  }
+  try {
+    const data = await readFile(target);
+    await cleanupMagickOutputs(tempFile);
+    return data;
+  } catch (error) {
+    await cleanupMagickOutputs(tempFile);
+    throw error;
+  }
 }
 
 /**
