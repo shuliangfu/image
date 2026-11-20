@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "bun test tests/",
-    "test:node": "tsx --tsconfig tsconfig.json --test --test-force-exit tests/mod.test.ts tests/image-operations.test.ts",
+    "test:node": "tsx --tsconfig tsconfig.json --test --experimental-test-isolation=none --test-force-exit tests/mod.test.ts tests/image-operations.test.ts",
     "check": "deno check src/mod.ts",
     "lint": "deno lint src/ tests/",
     "fmt": "deno fmt src/ tests/"
